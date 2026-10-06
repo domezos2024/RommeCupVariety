@@ -16,3 +16,11 @@
 *.aab
 .vs/
 .idea/
+
+# Signing / lokale Konfiguration
+*.keystore
+*.jks
+*.p12
+local.properties
+.DS_Store
+Thumbs.db
