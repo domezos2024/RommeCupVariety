@@ -35,7 +35,7 @@ namespace RommeCup.Karten
     public class CardTable
     {
         const string M = "CardTable";
-        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -2.9f, PileZ = 5.0f, TopZ = 7.3f, SideX = 10.6f, MeldTop = 3.1f, HandScale = 1.3f, MeldScale = 1.2f, PileScale = 1.22f, CardStep = .0062f;
+        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -2.9f, PileZ = 5.0f, TopZ = 7.3f, SideX = 10.6f, MeldTop = 3.1f, HandScale = 1.45f, MeldScale = 1.32f, PileScale = 1.22f, CardStep = .0062f;
         static readonly Quaternion Down = Quaternion.Euler(0, 0, 180);
         static readonly Vector3 StockPos = new Vector3(-2.1f, 0, PileZ), DiscPos = new Vector3(1.9f, 0, PileZ);
         public Camera Cam => Env.Cam;
@@ -186,7 +186,7 @@ namespace RommeCup.Karten
                 float th = (i - (n - 1) / 2f) * step * Mathf.Deg2Rad;
                 var dir = new Vector3(Mathf.Sin(th), 0, Mathf.Cos(th));
                 var pos = new Vector3(0, 0, HandZ - R) + dir * (R + (sel ? .55f : 0)) + Vector3.up * (.05f + .012f * i + (sel ? .3f : 0));
-                var rot = Quaternion.Euler(0, th * Mathf.Rad2Deg, 0) * Quaternion.Euler(sel ? -14 : -20, 0, 0);
+                var rot = Quaternion.Euler(0, th * Mathf.Rad2Deg, 0) * Quaternion.Euler(sel ? -22 : -30, 0, 0);
                 Put(used, d, c, Cards.Face(c), BackOf(c), pos, rot, CTag.Hand, i, c, sel ? (d.SelValid ? green : warm) : none, d.Hint.Contains(c), HandScale, false, d.Deal ? .3f + i * (d.N) * .07f : 0);
             }
             PlaceGroups(used, d, d.Staged, StageZ, CTag.Staged, 1.08f, green);

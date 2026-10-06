@@ -64,7 +64,7 @@ namespace RommeCup.Rummikub
             mesh = TileMesh.Build(TW, TD, TH, .13f, .055f);
             for (int k = 0; k < 53; k++)
             {
-                faces[k] = Mats.Lit(Color.white, 0, .58f, TileArt.Face(k), TileArt.Normal(k), 1f);
+                faces[k] = Mats.Lit(Color.white, 0, .42f, TileArt.Face(k), TileArt.Normal(k), 1f);
                 progress?.Invoke((k + 1) / 60f);
                 if (k % 3 == 2) yield return null;
             }
