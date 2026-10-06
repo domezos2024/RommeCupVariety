@@ -39,7 +39,7 @@ namespace RommeCup.Rummikub
         public static float FeltW => Board.Cols * PX + .9f;
         public static float FeltD => Board.Rows * PZ + .8f;
         public static float TopEdge => TableZ + FeltD / 2;
-        public static float RackZ0 => TableZ - FeltD / 2 - 1.5f;
+        public static float RackZ0 => TableZ - FeltD / 2 - 1.1f;
         static float HeapX0 => -FeltW / 2 - 5.6f;
         static float HeapZ0 => RackZ0 - .4f;
         public Camera Cam => Env.Cam;
@@ -121,8 +121,8 @@ namespace RommeCup.Rummikub
             for (int s = 1; s <= n; s++)
             {
                 OppSpan(s, n, out var cx, out var w);
-                Env.Cube(oppGo.transform, "OppBase" + s, new Vector3(cx, .14f, TopEdge + 1.35f), new Vector3(w, .28f, 1.7f), plastic);
-                Env.Cube(oppGo.transform, "OppStep" + s, new Vector3(cx, .32f, TopEdge + .95f), new Vector3(w, .2f, .8f), plastic);
+                Env.Cube(oppGo.transform, "OppBase" + s, new Vector3(cx, .14f, TopEdge + 1.05f), new Vector3(w, .28f, 1.5f), plastic);
+                Env.Cube(oppGo.transform, "OppStep" + s, new Vector3(cx, .32f, TopEdge + .7f), new Vector3(w, .2f, .7f), plastic);
             }
             FitCamera();
         }
@@ -142,7 +142,7 @@ namespace RommeCup.Rummikub
             float sp = Mathf.Min(step, (w - .4f) / Mathf.Max(1, per));
             rot = Quaternion.Euler(65, 0, 0);
             float x = cx + (k - (per - 1) / 2f) * sp;
-            return tier == 0 ? new Vector3(x, .3f, TopEdge + 1.55f) : new Vector3(x, .48f, TopEdge + .85f);
+            return tier == 0 ? new Vector3(x, .3f, TopEdge + 1.25f) : new Vector3(x, .48f, TopEdge + .62f);
         }
 
         static Vector3 HeapPos(int i, out Quaternion rot)
@@ -329,7 +329,7 @@ namespace RommeCup.Rummikub
         {
             float hw = FeltW / 2 + .3f, zt = TopEdge + .3f, zb = withRack ? RowZ(RackRows - 1) - RPZ / 2 - .2f : RackZ0 - 1;
             var l = new List<Vector3> { new Vector3(-hw, 0, zt), new Vector3(hw, 0, zt), new Vector3(-hw, 0, zb), new Vector3(hw, 0, zb), new Vector3(HeapX0 - .7f, 0, HeapZ0 - .8f), new Vector3(HeapX0 - .7f, .6f, HeapZ0 + 10 * 1.5f + .8f) };
-            if (oppN > 0) { l.Add(new Vector3(-hw, 1.2f, TopEdge + 2.3f)); l.Add(new Vector3(hw, 1.2f, TopEdge + 2.3f)); }
+            if (oppN > 0) { l.Add(new Vector3(-hw, 1f, TopEdge + 1.8f)); l.Add(new Vector3(hw, 1f, TopEdge + 1.8f)); }
             if (withRack) { l.Add(new Vector3(-hw, RowY(0) + .5f, zb)); l.Add(new Vector3(hw, RowY(0) + .5f, zb)); }
             return l.ToArray();
         }
@@ -337,7 +337,7 @@ namespace RommeCup.Rummikub
         public void FitCamera()
         {
             if (!Cam || backdrop) return;
-            Env.Fit(Bounds(true), 57, new Vector2(.008f, .838f), new Vector2(.008f, .835f), out camPos, out camRot, out focus, out camDist);
+            Env.Fit(Bounds(true), 63, new Vector2(.008f, .838f), new Vector2(.008f, .835f), out camPos, out camRot, out focus, out camDist);
         }
 
         public void Update(float dt)

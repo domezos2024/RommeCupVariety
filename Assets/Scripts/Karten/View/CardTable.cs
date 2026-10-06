@@ -35,7 +35,7 @@ namespace RommeCup.Karten
     public class CardTable
     {
         const string M = "CardTable";
-        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -2.9f, PileZ = 5.0f, TopZ = 7.3f, SideX = 10.6f, MeldTop = 3.1f, HandScale = 1.45f, MeldScale = 1.32f, PileScale = 1.22f, CardStep = .0062f;
+        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -2.9f, PileZ = 5.0f, TopZ = 7.3f, SideX = 10.6f, MeldTop = 3.1f, HandScale = 2.05f, MeldScale = 1.55f, PileScale = 1.22f, CardStep = .0062f;
         static readonly Quaternion Down = Quaternion.Euler(0, 0, 180);
         static readonly Vector3 StockPos = new Vector3(-2.1f, 0, PileZ), DiscPos = new Vector3(1.9f, 0, PileZ);
         public Camera Cam => Env.Cam;
@@ -178,7 +178,7 @@ namespace RommeCup.Karten
             var used = new HashSet<int>();
             var none = Color.black;
             int n = d.Hand.Length;
-            float step = n <= 1 ? 0 : Mathf.Min(4.4f, 64f / (n - 1)), R = 15f;
+            float step = n <= 1 ? 0 : Mathf.Min(2.9f, 42f / (n - 1)), R = 24f;
             var warm = new Color(.25f, .18f, .03f); var green = new Color(.04f, .26f, .1f);
             for (int i = 0; i < n; i++)
             {
@@ -191,12 +191,12 @@ namespace RommeCup.Karten
             }
             PlaceGroups(used, d, d.Staged, StageZ, CTag.Staged, 1.08f, green);
             float ms = 1;
-            foreach (var s in new[] { MeldScale, 1.05f, .9f, .78f, .66f })
+            foreach (var s in new[] { MeldScale, 1.35f, 1.15f, .98f, .84f, .7f })
             {
                 ms = s;
-                if (Rows(d.Melds, 15.5f, s) * 1.8f * s <= 6.6f) break;
+                if (Rows(d.Melds, 16.5f, s) * 1.8f * s <= 7f) break;
             }
-            PlaceGroups(used, d, d.Melds, MeldTop, CTag.Meld, ms, none, 15.5f, true);
+            PlaceGroups(used, d, d.Melds, MeldTop, CTag.Meld, ms, none, 16.5f, true);
             float dh = Mathf.Max(0, d.DCount - d.Disc.Length) * CardStep * PileScale;
             discBlock.SetActive(dh > 0);
             if (dh > 0) { discBlock.transform.position = DiscPos + Vector3.up * dh / 2; discBlock.transform.localScale = new Vector3(CW * PileScale * .97f, dh, CD * PileScale * .97f); }
@@ -287,9 +287,9 @@ namespace RommeCup.Karten
 
         void Fit(int n)
         {
-            float hx = n >= 3 ? SideX + 1.6f : 8.6f, zt = (n == 2 || n == 4) ? TopZ + 2f : PileZ + 1.6f, zb = HandZ - 2.9f;
+            float hx = n >= 3 ? SideX + 1.6f : 8.6f, zt = (n == 2 || n == 4) ? TopZ + 2f : PileZ + 1.6f, zb = HandZ - 1.5f;
             var pts = new[] { new Vector3(-hx, .3f, zt), new Vector3(hx, .3f, zt), new Vector3(-hx, 0, zb), new Vector3(hx, 0, zb), new Vector3(-9, .4f, HandZ), new Vector3(9, .4f, HandZ) };
-            Env.Fit(pts, 58, new Vector2(.01f, .835f), new Vector2(.01f, .83f), out camPos, out camRot, out focus, out camDist);
+            Env.Fit(pts, 62, new Vector2(.01f, .835f), new Vector2(.01f, .83f), out camPos, out camRot, out focus, out camDist);
         }
 
         public CView Pick(Vector2 screen)
