@@ -63,12 +63,12 @@ namespace RommeCup.Karten
         static void Index(Pix p, int suit, string s, Color ink)
         {
             bool two = s.Length > 1;
-            float h = two ? 48 : 52, sx = two ? .66f : 1, cx = 27, top = H - 12;
+            float h = two ? 60 : 64, sx = two ? .6f : 1, cx = 30, top = H - 10;
             foreach (var f in new[] { false, true })
             {
-                Rank(p, s, cx, top, h, f, ink, sx, .12f);
-                float sy = top - h - 22;
-                Sym(p, suit, f ? W - cx : cx, f ? H - sy : sy, 15, f, ink);
+                Rank(p, s, cx, top, h, f, ink, sx, .13f);
+                float sy = top - h - 30;
+                Sym(p, suit, f ? W - cx : cx, f ? H - sy : sy, 20, f, ink);
             }
         }
 
@@ -99,8 +99,8 @@ namespace RommeCup.Karten
                 var pp = Pips[rank];
                 for (int i = 0; i < pp.Length; i += 2)
                 {
-                    float px = W / 2f + (pp[i] - .5f) * 70, py = 64 + pp[i + 1] * 186;
-                    Sym(p, suit, px, py, 17, pp[i + 1] < .49f, ink);
+                    float px = W / 2f + (pp[i] - .5f) * 66, py = 62 + pp[i + 1] * 190;
+                    Sym(p, suit, px, py, 18, pp[i + 1] < .49f, ink);
                 }
             }
             return p.Tex();
@@ -119,10 +119,10 @@ namespace RommeCup.Karten
 
         static void Court(Pix p, int suit, int rank, Color ink)
         {
-            float fx0 = 50, fx1 = W - 50, fy0 = 40, fy1 = H - 40, cx = W / 2f, mid = H / 2f;
+            float fx0 = 64, fx1 = W - 64, fy0 = 40, fy1 = H - 40, cx = W / 2f, mid = H / 2f;
             p.Draw((x, y) => Mathf.Abs(Sdf.Box(x, y, cx, mid, (fx1 - fx0) / 2, (fy1 - fy0) / 2, 3)) - 1.1f, ink);
             Color a = suit % 2 == 0 ? CRed : CBlue, b = suit % 2 == 0 ? CBlue : CRed, line = Black;
-            Func<float, float, float> robe = (x, y) => Sdf.Poly(x, y, new[] { new Vector2(cx - 58, mid), new Vector2(cx + 58, mid), new Vector2(cx + 40, mid + 54), new Vector2(cx - 40, mid + 54) });
+            Func<float, float, float> robe = (x, y) => Sdf.Poly(x, y, new[] { new Vector2(cx - 44, mid), new Vector2(cx + 44, mid), new Vector2(cx + 32, mid + 54), new Vector2(cx - 32, mid + 54) });
             Mirror(p, robe, (x, y) => { float band = Mathf.Repeat((x - cx) * .7f + (y - mid) * .9f, 28); return band < 9 ? a : band < 18 ? CYel : b; });
             Mirror(p, Outline(robe, 1.2f), line);
             Func<float, float, float> collar = (x, y) => Sdf.Ellipse(x, y, cx, mid + 56, 34, 9);
