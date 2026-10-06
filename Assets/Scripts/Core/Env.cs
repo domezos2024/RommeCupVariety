@@ -184,10 +184,11 @@ namespace RommeCup.Core
             floor.GetComponent<Renderer>().material = fm;
         }
 
-        public static void Fit(Vector3[] pts, float pitch, Vector2 ax, Vector2 ay, out Vector3 pos, out Quaternion rot, out Vector3 focus, out float distance, float yaw = 0)
+        public static void Fit(Vector3[] pts, float pitch, Vector2 ax, Vector2 ay, out Vector3 pos, out Quaternion rot, out Vector3 focus, out float distance, float yaw = 0, float fov = 34)
         {
             var target = Vector3.zero; foreach (var p in pts) target += p; target /= pts.Length; target.y = 0;
             float dist = 25;
+            Cam.fieldOfView = fov; RenderSettings.fogDensity = .018f * Mathf.Tan(fov * .5f * Mathf.Deg2Rad) / Mathf.Tan(17 * Mathf.Deg2Rad);
             rot = Quaternion.Euler(pitch, yaw, 0);
             Cam.transform.rotation = rot;
             var right = rot * Vector3.right; var fwd = Vector3.ProjectOnPlane(rot * Vector3.forward, Vector3.up).normalized;
@@ -204,6 +205,7 @@ namespace RommeCup.Core
             Cam.transform.position = pos;
             focus = target; distance = dist;
             QualitySettings.shadowDistance = dist + 22;
+            Log.I(M, "fit pitch=" + pitch + " fov=" + fov + " dist=" + dist.ToString("0.0"));
         }
     }
 }
