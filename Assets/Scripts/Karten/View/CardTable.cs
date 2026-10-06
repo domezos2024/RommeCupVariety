@@ -277,20 +277,21 @@ namespace RommeCup.Karten
                 var go = new GameObject("Label" + r);
                 go.transform.SetParent(root.transform);
                 var tm = go.AddComponent<TextMesh>();
-                tm.font = UiKit.Font; tm.fontSize = 60; tm.characterSize = .06f; tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.fontStyle = FontStyle.Bold;
+                tm.font = UiKit.Font; tm.fontSize = 80; tm.characterSize = .105f; tm.anchor = TextAnchor.MiddleCenter; tm.alignment = TextAlignment.Center; tm.fontStyle = FontStyle.Bold;
                 go.GetComponent<MeshRenderer>().sharedMaterial = UiKit.Font.material;
                 go.transform.rotation = Quaternion.Euler(90, 0, 0);
                 labels[r] = tm;
             }
             var l = labels[r];
             l.gameObject.SetActive(true);
-            l.text = text; l.color = cur ? Theme.Brass : new Color(.92f, .88f, .8f, .8f);
-            l.transform.position = slot == 1 ? new Vector3(0, .02f, TopZ + 1.5f) : new Vector3(slot == 0 ? -SideX : SideX, .02f, 5.4f);
+            l.text = text; l.color = cur ? Theme.Brass : new Color(.95f, .92f, .85f);
+            l.anchor = slot == 1 ? TextAnchor.MiddleCenter : slot == 0 ? TextAnchor.MiddleLeft : TextAnchor.MiddleRight;
+            l.transform.position = slot == 1 ? new Vector3(0, .02f, TopZ + 1.6f) : new Vector3(slot == 0 ? -SideX - 1f : SideX + 1f, .02f, 6.1f);
         }
 
         void Fit(int n)
         {
-            float hx = n >= 3 ? SideX + 1.2f : 12.4f, zt = (n == 2 || n == 4) ? TopZ + 2f : MeldTop + .4f, zb = HandZ - 1.5f;
+            float hx = n >= 3 ? SideX + 1.2f : 12.4f, zt = (n == 2 || n == 4) ? TopZ + 2.3f : MeldTop + .7f, zb = HandZ - 1.5f;
             var pts = new[] { new Vector3(-hx, .3f, zt), new Vector3(hx, .3f, zt), new Vector3(-hx, 0, zb), new Vector3(hx, 0, zb), new Vector3(-9.8f, 0, HandZ - 3.1f), new Vector3(9.8f, 0, HandZ - 3.1f), new Vector3(0, .5f, HandZ - 1.6f) };
             Env.Fit(pts, 76, new Vector2(.01f, .835f), new Vector2(.01f, .83f), out camPos, out camRot, out focus, out camDist, 0, 24);
         }
