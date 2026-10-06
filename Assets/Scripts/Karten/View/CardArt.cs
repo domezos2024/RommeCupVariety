@@ -12,6 +12,7 @@ namespace RommeCup.Karten
         static readonly Color Paper = new Color(.985f, .978f, .962f), Paper2 = new Color(.955f, .945f, .925f);
         static readonly Color CRed = new Color(.8f, .12f, .12f), CBlue = new Color(.16f, .26f, .6f), CYel = new Color(.96f, .78f, .24f), Skin = new Color(.99f, .86f, .72f);
         static readonly string[] Rk = { "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "B", "D", "K" };
+        const float CX = 156;
         static Texture2D paperN;
 
         static readonly float[][] Pips =
@@ -63,13 +64,9 @@ namespace RommeCup.Karten
         static void Index(Pix p, int suit, string s, Color ink)
         {
             bool two = s.Length > 1;
-            float h = two ? 60 : 64, sx = two ? .6f : 1, cx = 30, top = H - 10;
-            foreach (var f in new[] { false, true })
-            {
-                Rank(p, s, cx, top, h, f, ink, sx, .13f);
-                float sy = top - h - 30;
-                Sym(p, suit, f ? W - cx : cx, f ? H - sy : sy, 20, f, ink);
-            }
+            float h = two ? 94 : 100, sx = two ? .58f : 1, cx = two ? 45 : 44, top = H - 8;
+            Rank(p, s, cx, top, h, false, ink, sx, .13f);
+            Sym(p, suit, 44, top - h - 54, 30, false, ink);
         }
 
         static Pix Blank(int seed)
@@ -89,9 +86,9 @@ namespace RommeCup.Karten
             Index(p, suit, Rk[rank], ink);
             if (rank == 0)
             {
-                float s = suit == 2 ? 50 : 38;
-                Sym(p, suit, W / 2f, H / 2f, s, false, ink);
-                if (suit == 2) p.Draw((x, y) => Mathf.Abs(Sdf.Ellipse(x, y, W / 2f, H / 2f - 6, 76, 92)) - 1.4f, ink * .9f, 20, 40, W - 20, H - 40);
+                float s = suit == 2 ? 42 : 38;
+                Sym(p, suit, CX, 140, s, false, ink);
+                if (suit == 2) p.Draw((x, y) => Mathf.Abs(Sdf.Ellipse(x, y, CX, 134, 56, 70)) - 1.4f, ink * .9f, CX - 62, 58, W - 2, 210);
             }
             else if (rank >= 10) Court(p, suit, rank, ink);
             else
@@ -99,8 +96,8 @@ namespace RommeCup.Karten
                 var pp = Pips[rank];
                 for (int i = 0; i < pp.Length; i += 2)
                 {
-                    float px = W / 2f + (pp[i] - .5f) * 66, py = 62 + pp[i + 1] * 190;
-                    Sym(p, suit, px, py, 18, pp[i + 1] < .49f, ink);
+                    float px = CX + (pp[i] - .5f) * 66, py = 42 + pp[i + 1] * 228;
+                    Sym(p, suit, px, py, 21, pp[i + 1] < .49f, ink);
                 }
             }
             return p.Tex();
@@ -109,8 +106,8 @@ namespace RommeCup.Karten
         static void Mirror(Pix p, Func<float, float, float> sdf, Func<float, float, Color> col)
         {
             float mid = H / 2f;
-            p.Draw((x, y) => Mathf.Max(sdf(x, y), mid - y), col, 30, mid - 2, W - 30, H - 30);
-            p.Draw((x, y) => Mathf.Max(sdf(W - x, H - y), y - mid), (x, y) => col(W - x, H - y), 30, 30, W - 30, mid + 2);
+            p.Draw((x, y) => Mathf.Max(sdf(x, y), mid - y), col, CX - 62, mid - 2, W - 4, H - 30);
+            p.Draw((x, y) => Mathf.Max(sdf(2 * CX - x, H - y), y - mid), (x, y) => col(2 * CX - x, H - y), CX - 62, 30, W - 4, mid + 2);
         }
 
         static void Mirror(Pix p, Func<float, float, float> sdf, Color c) => Mirror(p, sdf, (x, y) => c);
@@ -119,7 +116,7 @@ namespace RommeCup.Karten
 
         static void Court(Pix p, int suit, int rank, Color ink)
         {
-            float fx0 = 64, fx1 = W - 64, fy0 = 40, fy1 = H - 40, cx = W / 2f, mid = H / 2f;
+            float fx0 = CX - 58, fx1 = CX + 58, fy0 = 40, fy1 = H - 40, cx = CX, mid = H / 2f;
             p.Draw((x, y) => Mathf.Abs(Sdf.Box(x, y, cx, mid, (fx1 - fx0) / 2, (fy1 - fy0) / 2, 3)) - 1.1f, ink);
             Color a = suit % 2 == 0 ? CRed : CBlue, b = suit % 2 == 0 ? CBlue : CRed, line = Black;
             Func<float, float, float> robe = (x, y) => Sdf.Poly(x, y, new[] { new Vector2(cx - 44, mid), new Vector2(cx + 44, mid), new Vector2(cx + 32, mid + 54), new Vector2(cx - 32, mid + 54) });
@@ -157,7 +154,6 @@ namespace RommeCup.Karten
                 Mirror(p, (x, y) => Sdf.Seg(x, y, cx - 44, mid + 3, cx - 44, mid + 103) - 1.8f, new Color(.45f, .3f, .15f));
                 Mirror(p, (x, y) => Sdf.Poly(x, y, new[] { new Vector2(cx - 52, mid + 97), new Vector2(cx - 36, mid + 97), new Vector2(cx - 44, mid + 111) }), new Color(.72f, .72f, .76f));
             }
-            Mirror(p, (x, y) => SuitSdf(suit, x, y, fx0 + 16, fy1 - 18, 9, false), ink);
             p.Draw((x, y) => Sdf.Seg(x, y, fx0, mid, fx1, mid) - .6f, new Color(0, 0, 0, .5f));
         }
 
@@ -167,7 +163,7 @@ namespace RommeCup.Karten
             const string word = "JOKER";
             for (int i = 0; i < word.Length; i++)
             {
-                string ch = word[i].ToString(); float h = 26, top = H - 18 - i * 34;
+                string ch = word[i].ToString(); float h = 30, top = H - 14 - i * 40;
                 Rank(p, ch, 24, top, h, false, Red);
                 Rank(p, ch, 24, top, h, true, Black);
             }
