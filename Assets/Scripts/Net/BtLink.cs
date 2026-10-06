@@ -81,7 +81,7 @@ namespace RommeCup.Net
         public void StartDiscovery() => Do("startDiscovery");
         public void StopDiscovery() => Do("stopDiscovery");
         public void Connect(string addr) => Do("connect", addr);
-        public void Send(int id, string line) => Do("send", id, line);
+        public bool Send(int id, string line) => Call<bool>("send", id, line);
         public void Close(int id) => Do("close", id);
         public void Shutdown() { Do("shutdown"); j?.Dispose(); j = null; }
 

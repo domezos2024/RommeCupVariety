@@ -150,7 +150,8 @@ public class RummiBluetooth {
 
     public void close(int id) {
         Conn c = conns.remove(id);
-        if (c != null) c.shut();
+        if (c == null) return;
+        try { c.out.execute(c::shut); } catch (Exception e) { c.shut(); }
     }
 
     public void shutdown() {
