@@ -40,7 +40,7 @@ namespace RommeCup.EditorTools
             PlayerSettings.SetIcons(NamedBuildTarget.Unknown, new[] { iconAsset }, IconKind.Any);
             PlayerSettings.companyName = "Domezos";
             PlayerSettings.productName = "Romme Cup Variety";
-            PlayerSettings.bundleVersion = "2.2.0";
+            PlayerSettings.bundleVersion = "2.2.1";
             PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.Android, "com.domezos.rommecupvariety");
             PlayerSettings.SetScriptingBackend(NamedBuildTarget.Android, ScriptingImplementation.IL2CPP);
             PlayerSettings.SetManagedStrippingLevel(NamedBuildTarget.Android, ManagedStrippingLevel.Minimal);
@@ -55,7 +55,7 @@ namespace RommeCup.EditorTools
                 AndroidExternalToolsSettings.sdkRootPath = sdk;
                 Debug.Log("[RC] sdk=" + sdk);
             }
-            PlayerSettings.Android.bundleVersionCode = 4;
+            PlayerSettings.Android.bundleVersionCode = 5;
             PlayerSettings.Android.applicationEntry = AndroidApplicationEntry.Activity;
             PlayerSettings.defaultInterfaceOrientation = UIOrientation.AutoRotation;
             PlayerSettings.allowedAutorotateToPortrait = false;
