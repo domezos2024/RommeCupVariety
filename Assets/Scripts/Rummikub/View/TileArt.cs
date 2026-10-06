@@ -10,7 +10,7 @@ namespace RommeCup.Rummikub
         public static readonly Color[] Ink = { new Color(.09f, .09f, .1f), new Color(.76f, .08f, .09f), new Color(.06f, .24f, .6f), new Color(.92f, .48f, .04f) };
         public static readonly Color Ivory = new Color(.95f, .925f, .86f), IvoryDark = new Color(.9f, .87f, .79f);
         static readonly Dictionary<int, Texture2D> normals = new Dictionary<int, Texture2D>();
-        const float NumBase = 98;
+        const float NumBase = 70, Dot = 27;
 
         static void Base(Pix p, int seed)
         {
@@ -22,14 +22,16 @@ namespace RommeCup.Rummikub
             p.Noise(.012f, seed);
         }
 
+        static float Sx(string s) => s.Length > 1 ? .8f : 1f;
+
         static void NumberShape(string s, out float ox, out float h, out float th)
         {
-            h = s.Length > 1 ? 82 : 94; float w = Glyphs.Width(s) * h;
-            if (w > W - 26) { h *= (W - 26) / w; w = W - 26; }
-            ox = W / 2f - w / 2; th = h * .092f;
+            h = s.Length > 1 ? 112 : 120; float w = Glyphs.Width(s) * h * Sx(s);
+            if (w > W - 22) { h *= (W - 22) / w; w = W - 22; }
+            ox = W / 2f - w / 2; th = h * .115f;
         }
 
-        static float NumSdf(string s, float x, float y, float ox, float h, float th) => Glyphs.Dist(s, x, y, ox, NumBase, h) - th;
+        static float NumSdf(string s, float x, float y, float ox, float h, float th) => Glyphs.Dist(s, ox + (x - ox) / Sx(s), y, ox, NumBase, h) - th;
 
         public static Texture2D Face(int kind)
         {
@@ -40,9 +42,9 @@ namespace RommeCup.Rummikub
             NumberShape(s, out var ox, out var h, out var th);
             float x0 = 0, y0 = NumBase - 22, y1 = NumBase + h + 22;
             p.Draw((x, y) => NumSdf(s, x, y, ox, h, th) + 1.2f, new Color(0, 0, 0, .28f), x0, y0, W, y1, 2.5f);
-            p.Draw((x, y) => NumSdf(s, x, y, ox, h, th), (x, y) => { float k = Mathf.Clamp01((y - NumBase) / h); return Color.Lerp(ink * .82f, ink, k * .6f + .2f); }, x0, y0, W, y1);
-            p.Draw((x, y) => Sdf.Circle(x, y, W / 2f, 52, 9) + 1, new Color(0, 0, 0, .22f), W / 2f - 16, 36, W / 2f + 16, 68, 2);
-            p.Draw((x, y) => Sdf.Circle(x, y, W / 2f, 52, 9), ink * .9f, W / 2f - 14, 38, W / 2f + 14, 66);
+            p.Draw((x, y) => NumSdf(s, x, y, ox, h, th), (x, y) => { float k = Mathf.Clamp01((y - NumBase) / h); return Color.Lerp(ink * .9f, ink, k * .5f + .3f); }, x0, y0, W, y1);
+            p.Draw((x, y) => Sdf.Circle(x, y, W / 2f, Dot, 6) + 1, new Color(0, 0, 0, .22f), W / 2f - 14, Dot - 14, W / 2f + 14, Dot + 14, 2);
+            p.Draw((x, y) => Sdf.Circle(x, y, W / 2f, Dot, 6), ink * .9f, W / 2f - 12, Dot - 12, W / 2f + 12, Dot + 12);
             Edge(p);
             return p.Tex();
         }
@@ -62,9 +64,9 @@ namespace RommeCup.Rummikub
                 string s = key.ToString();
                 NumberShape(s, out var ox, out var h, out var th);
                 p.Height((x, y) => NumSdf(s, x, y, ox, h, th), -1.1f, 2.4f, 0, NumBase - 22, W, NumBase + h + 22);
-                p.Height((x, y) => Sdf.Circle(x, y, W / 2f, 52, 9), -1f, 2.2f, W / 2f - 14, 38, W / 2f + 14, 66);
+                p.Height((x, y) => Sdf.Circle(x, y, W / 2f, Dot, 6), -1f, 2.2f, W / 2f - 12, Dot - 12, W / 2f + 12, Dot + 12);
             }
-            t = p.NormalTex(2.4f);
+            t = p.NormalTex(1.8f);
             normals[key] = t;
             return t;
         }

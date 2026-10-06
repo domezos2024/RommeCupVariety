@@ -52,22 +52,23 @@ namespace RommeCup.Karten
             p.Draw((x, y) => SuitSdf(suit, x, y, cx, cy, s, flip), c, cx - r, cy - r, cx + r, cy + r, 1.1f);
         }
 
-        static void Rank(Pix p, string s, float cx, float top, float h, bool flip, Color c)
+        static void Rank(Pix p, string s, float cx, float top, float h, bool flip, Color c, float sx = 1, float weight = .085f)
         {
-            float w = Glyphs.Width(s) * h, ox = cx - w / 2, oy = top - h, th = h * .085f;
-            float x0 = ox - 8, x1 = ox + w + 8, y0 = oy - 8, y1 = oy + h + 8;
-            if (flip) p.Draw((x, y) => Glyphs.Dist(s, W - x, H - y, ox, oy, h) - th, c, W - x1, H - y1, W - x0, H - y0, 1.1f);
-            else p.Draw((x, y) => Glyphs.Dist(s, x, y, ox, oy, h) - th, c, x0, y0, x1, y1, 1.1f);
+            float w = Glyphs.Width(s) * h * sx, ox = cx - w / 2, oy = top - h, th = h * weight;
+            float x0 = ox - 10, x1 = ox + w + 10, y0 = oy - 10, y1 = oy + h + 10;
+            if (flip) p.Draw((x, y) => Glyphs.Dist(s, ox + (W - x - ox) / sx, H - y, ox, oy, h) - th, c, W - x1, H - y1, W - x0, H - y0, 1.1f);
+            else p.Draw((x, y) => Glyphs.Dist(s, ox + (x - ox) / sx, y, ox, oy, h) - th, c, x0, y0, x1, y1, 1.1f);
         }
 
         static void Index(Pix p, int suit, string s, Color ink)
         {
-            float h = s.Length > 1 ? 32 : 36, cx = 25;
+            bool two = s.Length > 1;
+            float h = two ? 48 : 52, sx = two ? .66f : 1, cx = 27, top = H - 12;
             foreach (var f in new[] { false, true })
             {
-                Rank(p, s, cx, H - 14, h, f, ink);
-                float sy = H - 14 - h - 20;
-                Sym(p, suit, f ? W - cx : cx, f ? H - sy : sy, 11, f, ink);
+                Rank(p, s, cx, top, h, f, ink, sx, .12f);
+                float sy = top - h - 22;
+                Sym(p, suit, f ? W - cx : cx, f ? H - sy : sy, 15, f, ink);
             }
         }
 
@@ -98,8 +99,8 @@ namespace RommeCup.Karten
                 var pp = Pips[rank];
                 for (int i = 0; i < pp.Length; i += 2)
                 {
-                    float px = W / 2f + (pp[i] - .5f) * 92, py = 62 + pp[i + 1] * 190;
-                    Sym(p, suit, px, py, 21, pp[i + 1] < .49f, ink);
+                    float px = W / 2f + (pp[i] - .5f) * 70, py = 64 + pp[i + 1] * 186;
+                    Sym(p, suit, px, py, 17, pp[i + 1] < .49f, ink);
                 }
             }
             return p.Tex();
@@ -118,7 +119,7 @@ namespace RommeCup.Karten
 
         static void Court(Pix p, int suit, int rank, Color ink)
         {
-            float fx0 = 40, fx1 = W - 40, fy0 = 40, fy1 = H - 40, cx = W / 2f, mid = H / 2f;
+            float fx0 = 50, fx1 = W - 50, fy0 = 40, fy1 = H - 40, cx = W / 2f, mid = H / 2f;
             p.Draw((x, y) => Mathf.Abs(Sdf.Box(x, y, cx, mid, (fx1 - fx0) / 2, (fy1 - fy0) / 2, 3)) - 1.1f, ink);
             Color a = suit % 2 == 0 ? CRed : CBlue, b = suit % 2 == 0 ? CBlue : CRed, line = Black;
             Func<float, float, float> robe = (x, y) => Sdf.Poly(x, y, new[] { new Vector2(cx - 58, mid), new Vector2(cx + 58, mid), new Vector2(cx + 40, mid + 54), new Vector2(cx - 40, mid + 54) });
