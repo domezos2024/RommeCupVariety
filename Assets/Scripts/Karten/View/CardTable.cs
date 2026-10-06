@@ -35,9 +35,9 @@ namespace RommeCup.Karten
     public class CardTable
     {
         const string M = "CardTable";
-        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -2.9f, PileZ = 5.0f, TopZ = 7.3f, SideX = 10.6f, MeldTop = 3.1f, HandScale = 2.05f, MeldScale = 1.55f, PileScale = 1.22f, CardStep = .0062f;
+        public const float CW = 1f, CD = 1.4f, TH = .008f, HandZ = -5.1f, StageZ = -1.4f, TopZ = 7.6f, SideX = 14.8f, MeldTop = 6.1f, MeldW = 17.6f, RowP = 1.6f, HandScale = 2.05f, MeldScale = HandScale, PileScale = HandScale, StageScale = HandScale, CardStep = .0062f;
         static readonly Quaternion Down = Quaternion.Euler(0, 0, 180);
-        static readonly Vector3 StockPos = new Vector3(-2.1f, 0, PileZ), DiscPos = new Vector3(1.9f, 0, PileZ);
+        static readonly Vector3 StockPos = new Vector3(-11.2f, 0, 3.5f), DiscPos = new Vector3(-11.2f, 0, -.5f);
         public Camera Cam => Env.Cam;
         public bool Ready, Building;
         GameObject root, stockBlock, discBlock;
@@ -82,9 +82,9 @@ namespace RommeCup.Karten
         void BuildScene()
         {
             root = new GameObject("CardTable");
-            const float w = 30f, d = 19.4f, cz = 1.15f;
+            const float w = 34f, d = 19.4f, cz = 1.15f;
             Env.BuildTable(root.transform, new Vector3(0, 0, cz), w, d, new Rect(-27, -16, 54, 34));
-            Fx.Dust(root.transform, new Vector3(0, 3.2f, cz), new Vector3(30, 5, 20));
+            Fx.Dust(root.transform, new Vector3(0, 3.2f, cz), new Vector3(34, 5, 20));
             var stripe = Mats.Lit(Color.white, 0, .3f, CardArt.EdgeStripes());
             stripe.mainTextureScale = new Vector2(1, 6);
             stockBlock = Env.Cube(root.transform, "StockBlock", StockPos, Vector3.one, stripe);
@@ -185,18 +185,21 @@ namespace RommeCup.Karten
                 int c = d.Hand[i]; bool sel = d.Sel.Contains(c);
                 float th = (i - (n - 1) / 2f) * step * Mathf.Deg2Rad;
                 var dir = new Vector3(Mathf.Sin(th), 0, Mathf.Cos(th));
-                var pos = new Vector3(0, 0, HandZ - R) + dir * (R + (sel ? .55f : 0)) + Vector3.up * (.05f + .012f * i + (sel ? .3f : 0));
-                var rot = Quaternion.Euler(0, th * Mathf.Rad2Deg, 0) * Quaternion.Euler(sel ? -22 : -30, 0, 0);
+                var rot = Quaternion.Euler(0, th * Mathf.Rad2Deg, 0) * Quaternion.Euler(-18, 0, 0);
+                var pos = new Vector3(0, 0, HandZ - R) + dir * R + Vector3.up * (.05f + .012f * i) + (sel ? rot * Vector3.forward * 1.25f : Vector3.zero);
                 Put(used, d, c, Cards.Face(c), BackOf(c), pos, rot, CTag.Hand, i, c, sel ? (d.SelValid ? green : warm) : none, d.Hint.Contains(c), HandScale, false, d.Deal ? .3f + i * (d.N) * .07f : 0);
             }
-            PlaceGroups(used, d, d.Staged, StageZ, CTag.Staged, 1.08f, green);
-            float ms = 1;
-            foreach (var s in new[] { MeldScale, 1.35f, 1.15f, .98f, .84f, .7f })
+            float ss = StageScale;
+            while (ss > .9f && Rows(d.Staged, MeldW, ss) > 1) ss -= .15f;
+            PlaceGroups(used, d, d.Staged, StageZ, CTag.Staged, ss, green);
+            float ms = 1, low = d.Staged.Count > 0 ? StageZ + CD * ss / 2 + .35f : HandZ + 2.3f;
+            foreach (var s in new[] { MeldScale, 1.85f, 1.65f, 1.45f, 1.25f, 1.05f, .9f, .76f, .64f })
             {
                 ms = s;
-                if (Rows(d.Melds, 16.5f, s) * 1.8f * s <= 7f) break;
+                int rows = Rows(d.Melds, MeldW, s);
+                if (rows == 0 || CD * s + (rows - 1) * RowP * s <= MeldTop - low) break;
             }
-            PlaceGroups(used, d, d.Melds, MeldTop, CTag.Meld, ms, none, 16.5f, true);
+            PlaceGroups(used, d, d.Melds, MeldTop - CD * ms / 2, CTag.Meld, ms, none, MeldW, true);
             float dh = Mathf.Max(0, d.DCount - d.Disc.Length) * CardStep * PileScale;
             discBlock.SetActive(dh > 0);
             if (dh > 0) { discBlock.transform.position = DiscPos + Vector3.up * dh / 2; discBlock.transform.localScale = new Vector3(CW * PileScale * .97f, dh, CD * PileScale * .97f); }
@@ -261,7 +264,7 @@ namespace RommeCup.Karten
                 {
                     var g = groups[gi];
                     for (int i = 0; i < g.Length; i++)
-                        Put(used, d, g[i], Cards.Face(g[i]), BackOf(g[i]), new Vector3(px + (CW * s) / 2 + .42f * s * i + J(g[i], 6, .02f), .004f + TH * s * 1.2f * i, z0 - r * 1.8f * s + J(g[i], 7, .03f)), Quaternion.Euler(0, J(g[i], 8, 1.4f), 0), tag, gi, g[i], glow, false, s, true);
+                        Put(used, d, g[i], Cards.Face(g[i]), BackOf(g[i]), new Vector3(px + (CW * s) / 2 + .42f * s * i + J(g[i], 6, .02f), .004f + TH * s * 1.2f * i, z0 - r * RowP * s + J(g[i], 7, .03f)), Quaternion.Euler(0, J(g[i], 8, 1.4f), 0), tag, gi, g[i], glow, false, s, true);
                     px += (CW + .42f * (g.Length - 1)) * s + .8f * s;
                 }
             }
@@ -287,9 +290,9 @@ namespace RommeCup.Karten
 
         void Fit(int n)
         {
-            float hx = n >= 3 ? SideX + 1.6f : 8.6f, zt = (n == 2 || n == 4) ? TopZ + 2f : PileZ + 1.6f, zb = HandZ - 1.5f;
-            var pts = new[] { new Vector3(-hx, .3f, zt), new Vector3(hx, .3f, zt), new Vector3(-hx, 0, zb), new Vector3(hx, 0, zb), new Vector3(-9, .4f, HandZ), new Vector3(9, .4f, HandZ) };
-            Env.Fit(pts, 62, new Vector2(.01f, .835f), new Vector2(.01f, .83f), out camPos, out camRot, out focus, out camDist);
+            float hx = n >= 3 ? SideX + 1.2f : 12.4f, zt = (n == 2 || n == 4) ? TopZ + 2f : MeldTop + .4f, zb = HandZ - 1.5f;
+            var pts = new[] { new Vector3(-hx, .3f, zt), new Vector3(hx, .3f, zt), new Vector3(-hx, 0, zb), new Vector3(hx, 0, zb), new Vector3(-9.8f, 0, HandZ - 3.1f), new Vector3(9.8f, 0, HandZ - 3.1f), new Vector3(0, .5f, HandZ - 1.6f) };
+            Env.Fit(pts, 76, new Vector2(.01f, .835f), new Vector2(.01f, .83f), out camPos, out camRot, out focus, out camDist, 0, 24);
         }
 
         public CView Pick(Vector2 screen)

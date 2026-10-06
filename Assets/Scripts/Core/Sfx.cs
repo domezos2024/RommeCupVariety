@@ -10,7 +10,7 @@ namespace RommeCup.Core
         const float Tau = Mathf.PI * 2;
         static readonly AudioSource[] voices = new AudioSource[12];
         static AudioSource room;
-        static int next;
+        static int next, silent;
         static readonly Dictionary<string, AudioClip[]> clips = new Dictionary<string, AudioClip[]>();
         static readonly Dictionary<string, float> lastPlay = new Dictionary<string, float>();
         static bool on = true;
@@ -115,6 +115,7 @@ namespace RommeCup.Core
         static AudioClip Clip(string name, float[] d, float peak)
         {
             float m = 1e-6f; foreach (var v in d) m = Mathf.Max(m, Mathf.Abs(v));
+            if (m < 1e-3f) { silent++; Log.W(M, "silent clip " + name); }
             float g = peak / m;
             int fade = Mathf.Min(d.Length, SR / 100);
             for (int i = 0; i < d.Length; i++) d[i] *= g;
@@ -169,7 +170,7 @@ namespace RommeCup.Core
             Add("applause_small", Applause(2.6f, 6));
             Add("room", Room());
             room.clip = clips["room"][0]; room.mute = !on; room.Play();
-            Log.I(M, "clips=" + clips.Count + " ms=" + (int)((Time.realtimeSinceStartup - t0) * 1000));
+            Log.I(M, "clips=" + clips.Count + " silent=" + silent + " on=" + on + " ms=" + (int)((Time.realtimeSinceStartup - t0) * 1000));
         }
 
         static AudioClip Applause(float dur, int people)
